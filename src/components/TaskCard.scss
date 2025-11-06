@@ -1,0 +1,26 @@
+.task-card {
+  background-color: white;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+  border: 1px solid transparent;
+
+  &:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6; /* Blue border on hover */
+  }
+
+  &--dragging {
+    opacity: 0;
+    box-shadow: none;
+  }
+
+  &__title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #1f2937;
+  }
+}

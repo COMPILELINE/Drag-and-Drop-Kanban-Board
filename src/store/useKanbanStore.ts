@@ -1,117 +1,129 @@
+// ✅ Fixed Zustand Store — Fully Working (TS 5+, Zustand 5+)
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { persist } from 'zustand/middleware';
-// Removed unused imports (Column, Board)
-import type { KanbanState, Task } from '../types/kanban'; 
-import { v4 as uuidv4 } from 'uuid';
 
-// --- INITIAL MOCK STATE ---
-// (Define initialMockState here as before)
-// ...
-const mockTaskId1 = uuidv4();
-const mockTaskId2 = uuidv4();
-const mockTaskId3 = uuidv4();
-const mockColId1 = uuidv4();
-const mockColId2 = uuidv4();
-const mockBoardId = uuidv4();
+// ✅ Use type-only imports (required when verbatimModuleSyntax = true)
+import type { Task, Column, Board, KanbanData } from '../types/kanban';
 
-const initialMockState: KanbanState = {
-  boards: {
-    [mockBoardId]: { id: mockBoardId, title: 'Project Alpha Board', columnIds: [mockColId1, mockColId2] },
-  },
-  columns: {
-    [mockColId1]: { id: mockColId1, title: 'To Do', taskIds: [mockTaskId1, mockTaskId3] },
-    [mockColId2]: { id: mockColId2, title: 'In Progress', taskIds: [mockTaskId2] },
-  },
-  tasks: {
-    [mockTaskId1]: { id: mockTaskId1, title: 'Design initial wireframes', description: '' },
-    [mockTaskId2]: { id: mockTaskId2, title: 'Set up React/Vite project', description: 'Install all core dependencies.' },
-    [mockTaskId3]: { id: mockTaskId3, title: 'Define SCSS variables', description: '' },
-  },
-  activeBoardId: mockBoardId,
+// --- INITIAL STATE ---
+const initialTasks: Record<string, Task> = {
+  'task-1': { id: 'task-1', title: 'Setup Project structure', description: 'Create React components, SCSS files, and initial store structure.', priority: 'High', dueDate: '2025-11-10' },
+  'task-2': { id: 'task-2', title: 'Implement Task Drag & Drop', description: 'Use react-dnd for vertical task movement.', priority: 'Medium', dueDate: '2025-11-12' },
+  'task-3': { id: 'task-3', title: 'Design basic UI layout', description: 'Style columns and task cards using SCSS/Tailwind principles.', priority: 'Low', dueDate: '2025-11-15' },
 };
 
+const initialColumns: Record<string, Column> = {
+  'col-1': { id: 'col-1', title: 'To Do', taskIds: ['task-1', 'task-2'] },
+  'col-2': { id: 'col-2', title: 'In Progress', taskIds: [] },
+  'col-3': { id: 'col-3', title: 'Done', taskIds: ['task-3'] },
+};
 
-// --- STORE ACTIONS INTERFACE ---
-export interface KanbanActions {
-  addTask: (columnId: string, title: string) => void;
-  updateTask: (taskId: string, data: Partial<Task>) => void;
-  deleteTask: (taskId: string) => void;
-  
-  moveTask: (
-    taskId: string,
-    sourceColumnId: string,
-    targetColumnId: string,
-    newIndex: number
-  ) => void;
+const initialBoards: Record<string, Board> = {
+  'board-1': { id: 'board-1', title: 'Main Project Board', columnIds: ['col-1', 'col-2', 'col-3'] },
+};
 
+// --- STORE INTERFACE ---
+export interface KanbanState extends KanbanData {
   setActiveBoard: (boardId: string) => void;
+  moveTask: (taskId: string, sourceColumnId: string, targetColumnId: string, targetIndex: number) => void;
+  moveColumn: (boardId: string, dragColumnId: string, hoverIndex: number) => void;
+  addTask: (columnId: string, title: string) => void;
+  addColumn: (boardId: string, title: string) => void;
+  updateTask: (taskId: string, updates: Partial<Task>) => void;
+  deleteTask: (taskId: string) => void;
 }
 
-// Combine state and actions
-export type KanbanStore = KanbanState & KanbanActions;
-
-// --- ZUSTAND STORE CREATION ---
-export const useKanbanStore = create<KanbanStore>()(
+// --- STORE IMPLEMENTATION ---
+export const useKanbanStore = create<KanbanState>()(
   persist(
-    // NOTE: Removed 'get' parameter from definition as it is unused (cleanup warning 6133)
-    immer((set) => ({ 
-      // FIX 2322: Spread the initial state properties here to satisfy the KanbanStore type
-      ...initialMockState,
+    immer((set) => ({
+      // Initial State
+      tasks: initialTasks,
+      columns: initialColumns,
+      boards: initialBoards,
+      activeBoardId: 'board-1',
 
-      // --- ACTIONS IMPLEMENTATION ---
-
-      addTask: (columnId, title) => 
-        set((state: KanbanStore) => {
-          const newTaskId = uuidv4();
-          state.tasks[newTaskId] = { id: newTaskId, title, description: '' };
-          state.columns[columnId].taskIds.push(newTaskId);
-        }),
-
-      updateTask: (taskId, data) => 
-        set((state: KanbanStore) => {
-          // Ensure we don't try to merge with undefined if task doesn't exist
-          if (state.tasks[taskId]) { 
-              Object.assign(state.tasks[taskId], data);
-          }
-        }),
-      
-      deleteTask: (taskId: string) => {
-        set((state: KanbanStore) => {
-          // Find which column this task belongs to and remove the task ID
-          for (const colId in state.columns) {
-            const col = state.columns[colId];
-            const taskIndex = col.taskIds.indexOf(taskId);
-            if (taskIndex !== -1) {
-              col.taskIds.splice(taskIndex, 1);
-              delete state.tasks[taskId];
-              break;
-            }
-          }
-        });
-      },
-
-      moveTask: (taskId, sourceColumnId, targetColumnId, newIndex) => {
-        set((state: KanbanStore) => {
-          const sourceCol = state.columns[sourceColumnId];
-          const targetCol = state.columns[targetColumnId];
-
-          // 1. Remove from Source Column
-          const taskIndex = sourceCol.taskIds.indexOf(taskId);
-          if (taskIndex !== -1) {
-            sourceCol.taskIds.splice(taskIndex, 1);
-          }
-
-          // 2. Insert into Target Column at the new index
-          targetCol.taskIds.splice(newIndex, 0, taskId);
-        });
-      },
+      // --- Actions ---
 
       setActiveBoard: (boardId) => set({ activeBoardId: boardId }),
+
+      moveTask: (taskId, sourceColumnId, targetColumnId, targetIndex) => {
+        set((state) => {
+          const sourceColumn = state.columns[sourceColumnId];
+          const targetColumn = state.columns[targetColumnId];
+
+          const dragIndex = sourceColumn.taskIds.indexOf(taskId);
+          if (dragIndex > -1) sourceColumn.taskIds.splice(dragIndex, 1);
+
+          targetColumn.taskIds.splice(targetIndex, 0, taskId);
+        });
+      },
+
+      moveColumn: (boardId, dragColumnId, hoverIndex) => {
+        set((state) => {
+          const board = state.boards[boardId];
+          const dragIndex = board.columnIds.indexOf(dragColumnId);
+          if (dragIndex > -1) {
+            board.columnIds.splice(dragIndex, 1);
+            board.columnIds.splice(hoverIndex, 0, dragColumnId);
+          }
+        });
+      },
+
+      addTask: (columnId, title) => {
+        set((state) => {
+          const newTaskId = `task-${Date.now()}`;
+          state.tasks[newTaskId] = {
+            id: newTaskId,
+            title,
+            description: '',
+            priority: 'Medium',
+            dueDate: new Date().toISOString().slice(0, 10),
+          };
+          state.columns[columnId].taskIds.unshift(newTaskId);
+        });
+      },
+
+      addColumn: (boardId, title) => {
+        set((state) => {
+          const newColumnId = `col-${Date.now()}`;
+          state.columns[newColumnId] = {
+            id: newColumnId,
+            title,
+            taskIds: [],
+          };
+          state.boards[boardId].columnIds.push(newColumnId);
+        });
+      },
+
+      updateTask: (taskId, updates) => {
+        set((state) => {
+          if (state.tasks[taskId]) {
+            state.tasks[taskId] = { ...state.tasks[taskId], ...updates };
+          }
+        });
+      },
+
+      deleteTask: (taskId) => {
+        set((state) => {
+          delete state.tasks[taskId];
+          Object.values(state.columns).forEach((column) => {
+            const index = column.taskIds.indexOf(taskId);
+            if (index > -1) column.taskIds.splice(index, 1);
+          });
+        });
+      },
     })),
     {
       name: 'kanban-storage',
-      storage: localStorage as any, 
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state: KanbanState) => ({
+        tasks: state.tasks,
+        columns: state.columns,
+        boards: state.boards,
+        activeBoardId: state.activeBoardId,
+      }),
     }
   )
 );

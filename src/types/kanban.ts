@@ -1,53 +1,45 @@
-// Using TypeScript for professional clarity (can be adapted to JSDoc/Vanilla JS)
+export const ItemTypes = {
+  TASK: 'task',
+  COLUMN: 'column',
+};
 
-// --- BASE ENTITIES ---
+// --- BASE DRAG INTERFACE ---
+// sourceColumnId is optional as it only applies to TASK items.
+export interface DragItem {
+  id: string;
+  type: string;
+  sourceColumnId?: string; 
+}
+
+// --- TASK & COLUMN TYPES ---
 export interface Task {
   id: string;
   title: string;
   description: string;
-  priority?: 'High' | 'Medium' | 'Low'; // V1.1+
-  dueDate?: string; // V1.1+
-  labelIds?: string[]; // V2.0+
+  priority: 'Low' | 'Medium' | 'High';
+  dueDate: string;
 }
 
 export interface Column {
   id: string;
   title: string;
-  taskIds: string[]; // Normalized: Holds the ordered list of task IDs
+  taskIds: string[];
 }
 
 export interface Board {
   id: string;
   title: string;
-  columnIds: string[]; // Normalized: Holds the ordered list of column IDs
+  columnIds: string[];
 }
 
-// --- GLOBAL STATE SHAPE ---
-export interface KanbanState {
-  boards: {
-    [id: string]: Board;
-  };
-  columns: {
-    [id: string]: Column;
-  };
-  tasks: {
-    [id: string]: Task;
-  };
-  activeBoardId: string | null;
+export interface KanbanData {
+    tasks: Record<string, Task>;
+    columns: Record<string, Column>;
+    boards: Record<string, Board>;
+    activeBoardId: string | null;
 }
 
-// --- DRAG-AND-DROP TYPES ---
-export const ItemTypes = {
-  TASK: 'task',
-  COLUMN: 'column',
-} as const;
-
-export type ItemTypeKey = (typeof ItemTypes)[keyof typeof ItemTypes];
-
-
-export interface DragItem {
-  id: string;
-  type: ItemTypeKey; // Use the fixed type
-  sourceColumnId: string;
-  // Other necessary metadata for drag operations
+export interface TaskModalData {
+    task: Task;
+    columnId: string;
 }

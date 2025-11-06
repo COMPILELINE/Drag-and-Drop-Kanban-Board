@@ -1,0 +1,53 @@
+.kanban-column {
+    min-width: 300px;
+    max-width: 300px;
+    background-color: #ebecf0;
+    border-radius: var(--border-radius-base);
+    padding: 10px;
+    height: fit-content;
+    box-shadow: var(--shadow-base);
+    transition: background-color 0.2s;
+    
+    // Style for the column drag handle area
+    &__header {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        padding: 5px 10px;
+        margin-bottom: 10px;
+        cursor: grab;
+        user-select: none;
+        
+        &[data-drag-handle]:hover {
+            background-color: #dfe1e6;
+            border-radius: 4px;
+        }
+    }
+    
+    &__card-list {
+        min-height: 20px; /* Ensures drop area is visible */
+    }
+    
+    &--empty-over {
+        background-color: #dcdde1; /* Slightly darker color when an empty column is a drop target */
+    }
+
+    &__add-button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        color: var(--color-text-secondary);
+        padding: 8px 10px;
+        margin-top: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        
+        &:hover {
+            background-color: #dfe1e6;
+            border-radius: 4px;
+            color: var(--color-text-primary);
+        }
+    }
+}

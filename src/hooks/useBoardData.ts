@@ -1,36 +1,37 @@
+import { useMemo } from 'react';
 import { useKanbanStore } from '../store/useKanbanStore';
-// FIX 1: Use type-only imports for all types
-import type { KanbanStore } from '../store/useKanbanStore';
-import type { Column, Task } from '../types/kanban'; 
+import type { Column } from '../types/kanban';
 
-/**
- * Hook to retrieve the currently active board's data,
- * denormalizing the columns and tasks for easy rendering.
- */
 export const useBoardData = () => {
-  // No changes needed for selector types, as they were fixed in the previous iteration
-  const activeBoardId = useKanbanStore((state: KanbanStore) => state.activeBoardId);
-  const boards = useKanbanStore((state: KanbanStore) => state.boards);
-  const columns = useKanbanStore((state: KanbanStore) => state.columns);
-  const tasks = useKanbanStore((state: KanbanStore) => state.tasks);
-
-  if (!activeBoardId || !boards[activeBoardId]) {
-    return { activeBoard: null, columnsData: [] };
-  }
-
-  const activeBoard = boards[activeBoardId];
-
-  // Denormalize: Map column IDs to full column objects, and map task IDs to full task objects
-  const columnsData = activeBoard.columnIds
-    .map((colId: string) => columns[colId])
-    // FIX 2: Explicitly type the 'col' parameter, ensuring type safety in the filter
-    .filter((col): col is Column => !!col) 
-    .map((column: Column) => ({
-      ...column,
-      tasks: column.taskIds
-        .map((taskId: string) => tasks[taskId])
-        .filter((task): task is Task => !!task),
+    // Select necessary state parts from the store
+    const { activeBoardId, boards, columns, tasks } = useKanbanStore(state => ({
+        activeBoardId: state.activeBoardId,
+        boards: state.boards,
+        columns: state.columns,
+        tasks: state.tasks,
     }));
 
-  return { activeBoard, columnsData };
+    // Memoize the linked board and columns for performance
+    const { activeBoard, columnsData } = useMemo(() => {
+        const activeBoard = activeBoardId ? boards[activeBoardId] : undefined;
+        
+        if (!activeBoard) {
+            return { activeBoard: undefined, columnsData: [] };
+        }
+
+        // Link tasks to their respective columns
+        const columnsData: (Column & { tasks: typeof tasks[string][] })[] = activeBoard.columnIds
+            .map(columnId => columns[columnId])
+            .filter((column): column is Column => !!column) // Filter out null/undefined columns
+            .map(column => ({
+                ...column,
+                tasks: column.taskIds
+                    .map(taskId => tasks[taskId])
+                    .filter((task): task is typeof tasks[string] => !!task) // Filter out null/undefined tasks
+            }));
+
+        return { activeBoard, columnsData };
+    }, [activeBoardId, boards, columns, tasks]);
+
+    return { activeBoard, columnsData };
 };

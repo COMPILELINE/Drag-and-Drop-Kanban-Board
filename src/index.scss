@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --color-primary: #3498db;
+    --color-primary-dark: #2980b9;
+    --color-secondary: #2ecc71;
+    --color-danger: #e74c3c;
+    --color-danger-dark: #c0392b;
+    --color-background: #f4f5f7;
+    --color-card-bg: #ffffff;
+    --color-text-primary: #2c3e50;
+    --color-text-secondary: #7f8c8d;
+    --border-radius-base: 8px;
+    --shadow-base: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+}
+
+.app-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Global Button Styles */
+.btn {
+    padding: 10px 15px;
+    border-radius: var(--border-radius-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    border: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn--primary {
+    background-color: var(--color-primary);
+    color: white;
+    &:hover {
+        background-color: var(--color-primary-dark);
+        box-shadow: var(--shadow-base);
+    }
+}
+
+.btn--secondary {
+    background-color: #ecf0f1;
+    color: var(--color-text-primary);
+    border: 1px solid #bdc3c7;
+    &:hover {
+        background-color: #bdc3c7;
+        box-shadow: var(--shadow-base);
+    }
+}
+
+.btn--danger {
+    background-color: var(--color-danger);
+    color: white;
+    &:hover {
+        background-color: var(--color-danger-dark);
+    }
+}
+
+/* Utility to center loading spinner */
+.flex {
+    display: flex;
+}
+.items-center {
+    align-items: center;
+}
+.justify-center {
+    justify-content: center;
+}
+.min-h-screen {
+    min-height: 100vh;
+}
+.text-gray-500 {
+    color: var(--color-text-secondary);
+}
+.text-sm {
+    font-size: 0.875rem;
+}
+
+/* Spinner animation placeholder */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
