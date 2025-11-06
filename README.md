@@ -60,7 +60,7 @@ Follow these steps to run the project locally:
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url> 
+git clone https://github.com/COMPILELINE/Drag-and-Drop-Kanban-Board.git
 ```
 
 ### 2. Install Dependencies
