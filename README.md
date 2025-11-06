@@ -1,4 +1,4 @@
-# 🚀 ProjectForge Kanban Board
+# 🚀 Drag and Drop Kanban Board
 
 A highly interactive and responsive **Kanban Board Application** built with **React + TypeScript**, featuring real-time drag-and-drop for tasks and columns, with automatic local data persistence. Easily manage tasks across **To Do, In Progress, and Done** stages with an intuitive UI.
 
