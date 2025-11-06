@@ -6,17 +6,14 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import './App.scss';
 
-// Custom hook to track local storage hydration status
 const useHydrationStatus = () => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   React.useEffect(() => {
-    // Check initial status
     if (useKanbanStore.persist.hasHydrated()) {
         setIsHydrated(true);
     }
 
-    // Set up listeners for hydration completion
     const unsubFinish = useKanbanStore.persist.onFinishHydration(() => setIsHydrated(true));
 
     return () => {
@@ -29,7 +26,6 @@ const useHydrationStatus = () => {
 
 
 const AppContent: React.FC = () => {
-  // Use custom hook to track local storage hydration status
   const isHydrated = useHydrationStatus();
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
 
@@ -45,7 +41,6 @@ const AppContent: React.FC = () => {
       openTaskModal(taskId);
   }
 
-  // Show a loading state until data hydration from Local Storage is complete
   if (!isHydrated) {
     return (
         <div className="flex items-center justify-center min-h-screen text-gray-500">

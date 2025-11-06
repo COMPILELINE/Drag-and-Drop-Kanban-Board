@@ -37,3 +37,4 @@ export default defineConfig({
   },
   ignorePatterns: ['dist', '.eslintrc.cjs'],
 });
+];

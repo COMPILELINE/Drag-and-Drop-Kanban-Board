@@ -35,7 +35,6 @@ body {
     flex-direction: column;
 }
 
-/* Global Button Styles */
 .btn {
     padding: 10px 15px;
     border-radius: var(--border-radius-base);
@@ -76,7 +75,6 @@ body {
     }
 }
 
-/* Utility to center loading spinner */
 .flex {
     display: flex;
 }
@@ -96,7 +94,6 @@ body {
     font-size: 0.875rem;
 }
 
-/* Spinner animation placeholder */
 .animate-spin {
   animation: spin 1s linear infinite;
 }

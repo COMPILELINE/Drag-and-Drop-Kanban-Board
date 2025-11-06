@@ -17,8 +17,6 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({ task, columnId, index, onTaskClick }) => {
   const ref = useRef<HTMLDivElement>(null);
   const moveTask = useKanbanStore((state) => state.moveTask);
-
-  // --- 1. DRAG SOURCE ---
   const [{ isDragging }, drag] = useDrag<DragItem, unknown, { isDragging: boolean }>(() => ({
     type: ItemTypes.TASK,
     item: { id: task.id, type: ItemTypes.TASK, sourceColumnId: columnId }, 
@@ -26,8 +24,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, columnId, index, onTaskClick 
       isDragging: monitor.isDragging(),
     }),
   }));
-
-  // --- 2. DROP TARGET ---
   const [{ handlerId }, drop] = useDrop<DragItem, unknown, { handlerId: string | null }>(() => ({ 
     accept: ItemTypes.TASK,
     collect: (monitor) => ({
@@ -38,10 +34,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, columnId, index, onTaskClick 
       if (!ref.current || item.id === task.id) return;
       
       const sourceColumnId = item.sourceColumnId;
-      // Ensure the sourceColumnId exists, as it must for a task drag
-      if (!sourceColumnId) return; 
+      if (!sourceColumnId) return;
 
-      const dragIndex = useKanbanStore.getState().columns[sourceColumnId].taskIds.indexOf(item.id);
+      const sourceColumn = useKanbanStore.getState().columns[sourceColumnId];
+      if (!sourceColumn) return;
+
+      const dragIndex = sourceColumn.taskIds.indexOf(item.id);
       const hoverIndex = index;
 
       if (dragIndex === hoverIndex && sourceColumnId === columnId) return;

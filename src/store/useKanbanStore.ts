@@ -1,12 +1,8 @@
-// ✅ Fixed Zustand Store — Fully Working (TS 5+, Zustand 5+)
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-
-// ✅ Use type-only imports (required when verbatimModuleSyntax = true)
 import type { Task, Column, Board, KanbanData } from '../types/kanban';
 
-// --- INITIAL STATE ---
 const initialTasks: Record<string, Task> = {
   'task-1': { id: 'task-1', title: 'Setup Project structure', description: 'Create React components, SCSS files, and initial store structure.', priority: 'High', dueDate: '2025-11-10' },
   'task-2': { id: 'task-2', title: 'Implement Task Drag & Drop', description: 'Use react-dnd for vertical task movement.', priority: 'Medium', dueDate: '2025-11-12' },
@@ -23,7 +19,6 @@ const initialBoards: Record<string, Board> = {
   'board-1': { id: 'board-1', title: 'Main Project Board', columnIds: ['col-1', 'col-2', 'col-3'] },
 };
 
-// --- STORE INTERFACE ---
 export interface KanbanState extends KanbanData {
   setActiveBoard: (boardId: string) => void;
   moveTask: (taskId: string, sourceColumnId: string, targetColumnId: string, targetIndex: number) => void;
@@ -34,24 +29,24 @@ export interface KanbanState extends KanbanData {
   deleteTask: (taskId: string) => void;
 }
 
-// --- STORE IMPLEMENTATION ---
 export const useKanbanStore = create<KanbanState>()(
   persist(
     immer((set) => ({
-      // Initial State
       tasks: initialTasks,
       columns: initialColumns,
       boards: initialBoards,
       activeBoardId: 'board-1',
-
-      // --- Actions ---
-
       setActiveBoard: (boardId) => set({ activeBoardId: boardId }),
 
       moveTask: (taskId, sourceColumnId, targetColumnId, targetIndex) => {
         set((state) => {
           const sourceColumn = state.columns[sourceColumnId];
           const targetColumn = state.columns[targetColumnId];
+
+          if (!sourceColumn || !targetColumn) {
+            console.error('Invalid source or target column');
+            return;
+          }
 
           const dragIndex = sourceColumn.taskIds.indexOf(taskId);
           if (dragIndex > -1) sourceColumn.taskIds.splice(dragIndex, 1);
@@ -63,6 +58,10 @@ export const useKanbanStore = create<KanbanState>()(
       moveColumn: (boardId, dragColumnId, hoverIndex) => {
         set((state) => {
           const board = state.boards[boardId];
+          if (!board) {
+            console.error('Invalid board ID');
+            return;
+          }
           const dragIndex = board.columnIds.indexOf(dragColumnId);
           if (dragIndex > -1) {
             board.columnIds.splice(dragIndex, 1);
@@ -73,6 +72,12 @@ export const useKanbanStore = create<KanbanState>()(
 
       addTask: (columnId, title) => {
         set((state) => {
+          const column = state.columns[columnId];
+          if (!column) {
+            console.error('Invalid column ID');
+            return;
+          }
+
           const newTaskId = `task-${Date.now()}`;
           state.tasks[newTaskId] = {
             id: newTaskId,
@@ -81,19 +86,25 @@ export const useKanbanStore = create<KanbanState>()(
             priority: 'Medium',
             dueDate: new Date().toISOString().slice(0, 10),
           };
-          state.columns[columnId].taskIds.unshift(newTaskId);
+          column.taskIds.unshift(newTaskId);
         });
       },
 
       addColumn: (boardId, title) => {
         set((state) => {
+          const board = state.boards[boardId];
+          if (!board) {
+            console.error('Invalid board ID');
+            return;
+          }
+
           const newColumnId = `col-${Date.now()}`;
           state.columns[newColumnId] = {
             id: newColumnId,
             title,
             taskIds: [],
           };
-          state.boards[boardId].columnIds.push(newColumnId);
+          board.columnIds.push(newColumnId);
         });
       },
 

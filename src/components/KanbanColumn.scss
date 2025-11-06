@@ -8,7 +8,6 @@
     box-shadow: var(--shadow-base);
     transition: background-color 0.2s;
     
-    // Style for the column drag handle area
     &__header {
         font-size: 1.1rem;
         font-weight: 600;
@@ -25,11 +24,11 @@
     }
     
     &__card-list {
-        min-height: 20px; /* Ensures drop area is visible */
+        min-height: 20px; 
     }
     
     &--empty-over {
-        background-color: #dcdde1; /* Slightly darker color when an empty column is a drop target */
+        background-color: #dcdde1;
     }
 
     &__add-button {

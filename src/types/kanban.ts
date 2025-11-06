@@ -2,16 +2,11 @@ export const ItemTypes = {
   TASK: 'task',
   COLUMN: 'column',
 };
-
-// --- BASE DRAG INTERFACE ---
-// sourceColumnId is optional as it only applies to TASK items.
 export interface DragItem {
   id: string;
   type: string;
   sourceColumnId?: string; 
 }
-
-// --- TASK & COLUMN TYPES ---
 export interface Task {
   id: string;
   title: string;

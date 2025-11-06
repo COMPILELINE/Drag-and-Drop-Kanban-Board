@@ -13,7 +13,6 @@ const BoardView: React.FC<BoardViewProps> = ({ onTaskClick }) => {
   const moveColumn = useKanbanStore(state => state.moveColumn); 
 
   if (!activeBoard) {
-    // Check hydration status from the persist middleware
     if (!useKanbanStore.persist.hasHydrated()) {
       return null;
     }

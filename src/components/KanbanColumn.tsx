@@ -7,11 +7,10 @@ import { useKanbanStore } from '../store/useKanbanStore';
 import TaskCard from './TaskCard'; 
 import './KanbanColumn.scss';
 
-// Define the type for the item being dragged when it's a Column
 interface ColumnDragItem extends DragItem {
   type: typeof ItemTypes.COLUMN;
-  id: string; // column ID
-  index: number; // current index in the board
+  id: string;
+  index: number;
 }
 
 interface KanbanColumnProps {
@@ -26,11 +25,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, onTaskClick, index,
   const ref = useRef<HTMLDivElement>(null);
   const moveTask = useKanbanStore((state) => state.moveTask);
 
-  // ------------------------------------------
-  // 1. COLUMN DRAG AND DROP (Reordering columns)
-  // ------------------------------------------
-  
-  // A. Column Drop Target 
   const [{ handlerId: columnDropHandlerId }, dropColumn] = useDrop<ColumnDragItem, unknown, { handlerId: string | null }>(() => ({
     accept: ItemTypes.COLUMN,
     hover(item, monitor) {
@@ -54,11 +48,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, onTaskClick, index,
     collect: (monitor) => ({
       isOver: monitor.isOver({ shallow: true }),
       canDrop: monitor.canDrop(),
-      handlerId: monitor.getHandlerId()?.toString() ?? null, // Retrieve handler ID here
+      handlerId: monitor.getHandlerId()?.toString() ?? null,
     }),
   }));
   
-  // B. Column Drag Source
   const [{ isColumnDragging }, dragColumn] = useDrag<ColumnDragItem, unknown, { isColumnDragging: boolean }>(() => ({
     type: ItemTypes.COLUMN,
     item: { id: column.id, type: ItemTypes.COLUMN, index }, 
@@ -68,10 +61,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, onTaskClick, index,
     canDrag: isColumnDraggingEnabled,
   }));
 
-
-  // ------------------------------------------
-  // 2. TASK DROP TARGET (Tasks being dropped into this column)
-  // ------------------------------------------
   const [{ isOver }, dropTask] = useDrop<DragItem, unknown, { isOver: boolean }>(() => ({
     accept: ItemTypes.TASK,
     collect: (monitor: DropTargetMonitor<DragItem, unknown>) => ({
@@ -93,7 +82,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ column, onTaskClick, index,
     },
   }));
 
-  // Attach all refs:
   const connectedRef = (element: HTMLDivElement | null) => {
     dragColumn(dropColumn(element)); 
     dropTask(element);

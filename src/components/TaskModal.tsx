@@ -16,7 +16,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ taskId, onClose }) => {
 
   const [localTask, setLocalTask] = useState<Task | null>(task ? { ...task } : null);
 
-  // If task doesn't exist (e.g., deleted), close modal
   useEffect(() => {
     if (!task) {
       onClose();
