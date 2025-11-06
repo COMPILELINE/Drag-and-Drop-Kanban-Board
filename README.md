@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# 🚀 ProjectForge Kanban Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A highly interactive and responsive **Kanban Board Application** built with **React + TypeScript**, featuring real-time drag-and-drop for tasks and columns, with automatic local data persistence. Easily manage tasks across **To Do, In Progress, and Done** stages with an intuitive UI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+### ✅ **Real-time Drag & Drop**
+- Powered by **react-dnd** for smooth drag interactions  
+- Move Tasks **within the same column** or **across columns**
+- Rearrange entire **columns horizontally**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 📌 **Task Management**
+- Add new tasks to any column  
+- Click a task to open a **Task Modal** where you can:
+  - Edit title, description, priority, due date
+  - Delete task permanently
 
-## Expanding the ESLint configuration
+### 💾 **Local Persistence**
+- Everything (tasks, columns, layout) is saved to **Local Storage** using Zustand persist
+- Your board is **restored automatically on refresh**
+- No backend or database required
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 📱 **Fully Responsive**
+- Mobile and Desktop friendly layout  
+- Smooth usability across devices  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠️ Technology Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Category | Technology | Purpose |
+|----------|-------------|-----------|
+| **Frontend** | React (Hooks, Functional Components) | Core UI Framework |
+| **State Management** | Zustand | Lightweight global store for tasks, columns, and board structure |
+| **Drag & Drop** | React DND (HTML5 backend) | Enables column + task drag-and-drop logic |
+| **Language** | TypeScript | Type safety and better dev experience |
+| **Styling** | SCSS | Modular and clean component-scoped styling |
+| **Persistence** | Local Storage | Saves board state in browser |
+
+---
+
+## 💾 Data Persistence (Local Storage)
+
+This project auto-saves your board using **Local Storage**, with no cloud or external setup needed.
+
+- **No Signup or API Keys Needed**
+- **Instant Save on every change**
+- Data is **browser-specific**
+- Clearing browser storage resets to default demo board
+
+> Switching devices or browsers will not retain your data.
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run the project locally:
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url> 
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Install Dependencies
+```bash
+cd projectforge-kanban-board
+npm install
+# or
+yarn install
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Start the Development Server
+```bash
+npm run dev
+# or
+yarn dev
+```
+The application will be available at:
+```bash
+http://localhost:5173
 ```
